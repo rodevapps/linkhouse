@@ -124,9 +124,9 @@
     <script type="module">
         import { createApp, ref, onMounted, computed } from 'vue'
 
-        const fetchData = async () => {
+        const fetchData = async (apikey) => {
                 const response = await fetch(
-                    'https://app.linkhouse.co/rekrutacja/api?api_key=APIREKRUTACJA', {
+                    'https://app.linkhouse.co/rekrutacja/api?api_key=' + apikey, {
                     method: 'post',
                     cache: "no-cache",
                     headers: {
@@ -145,6 +145,7 @@
             const limit = ref(10);
             const searchterm = ref('');
             const sorted_column = ref({column: '', order: ''});
+            const apikey = ref('');
             
             const filteredUsers = computed(() => {
               if (searchterm) {
@@ -176,7 +177,7 @@
 
             const handleSend = async (id) => {
               const response = await fetch(
-                'https://app.linkhouse.co/rekrutacja/ping?api_key=APIREKRUTACJA', {
+                'https://app.linkhouse.co/rekrutacja/ping?api_key=' + apikey.value, {
                 method: 'post',
                 cache: "no-cache",
                 headers: {
@@ -221,7 +222,7 @@
             }
 
             const handleReset = async () => {
-              const r = await fetchData();
+              const r = await fetchData(apikey.value);
 
               console.log(r);
 
@@ -233,7 +234,17 @@
             }
 
             onMounted(async () => {
-              const r = await fetchData();
+              const a = localStorage.getItem("apikey");
+
+              if (a === null) {
+                apikey.value = await prompt('Please type api key:');
+
+                localStorage.setItem("apikey", apikey.value);
+              } else {
+                apikey.value = a;
+              }
+
+              const r = await fetchData(apikey.value);
 
               console.log(r);
 
