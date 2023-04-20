@@ -148,7 +148,7 @@
             const apikey = ref('');
             
             const filteredUsers = computed(() => {
-              if (searchterm) {
+              if (searchterm.value) {
                 return users.value.filter(item => item.name.includes(searchterm.value) || item.login.includes(searchterm.value));
               } else {
                 return users.value;
@@ -156,6 +156,10 @@
             });
 
             const filteredUsersLimited = computed(() => {
+              if (searchterm.value !== '') {
+                page.value = 1;
+              }
+
               const start = (page.value - 1) * limit.value;
               const end = (page.value * limit.value) + 1;
 
